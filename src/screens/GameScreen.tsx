@@ -242,16 +242,31 @@ function GameScreen({ onExit }: GameScreenProps) {
         } else if (y + bubble.size > FLOOR_TOP_Y) {
           y = FLOOR_TOP_Y - bubble.size
           vy = BUBBLE_BOUNCE_VY
-        } else if (vy > 0) {
+        } else {
           for (const block of BLOCKS) {
             const overlapsX = x + bubble.size > block.x && x < block.x + block.width
+            const overlapsY = y + bubble.size > block.y && y < block.y + block.height
+            if (!overlapsX || !overlapsY) continue
+
             const wasAboveBlock = bubble.y + bubble.size <= block.y
-            const landedOnBlock = y + bubble.size > block.y
-            if (overlapsX && wasAboveBlock && landedOnBlock) {
+            const wasBelowBlock = bubble.y >= block.y + block.height
+            const wasLeftOfBlock = bubble.x + bubble.size <= block.x
+            const wasRightOfBlock = bubble.x >= block.x + block.width
+
+            if (wasAboveBlock && vy > 0) {
               y = block.y - bubble.size
               vy = BUBBLE_BOUNCE_VY
-              break
+            } else if (wasBelowBlock && vy < 0) {
+              y = block.y + block.height
+              vy = -vy
+            } else if (wasLeftOfBlock && vx > 0) {
+              x = block.x - bubble.size
+              vx = -vx
+            } else if (wasRightOfBlock && vx < 0) {
+              x = block.x + block.width
+              vx = -vx
             }
+            break
           }
         }
 
