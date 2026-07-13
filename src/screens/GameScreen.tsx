@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import {
   BIG_BUBBLE_SIZE,
+  BUBBLE_BOUNCE_VY,
+  BUBBLE_MIN_X,
   BUBBLE_START_X,
   BUBBLE_START_Y,
+  BUBBLE_VX,
+  CEILING_Y,
+  FLOOR_TOP_Y,
   GRAVITY,
   PLAYER_HEIGHT,
   PLAYER_MAX_X,
@@ -13,6 +18,7 @@ import {
   PLAYER_Y,
   STAGE_HEIGHT,
   STAGE_WIDTH,
+  WALL_THICKNESS,
   WIRE_HEIGHT,
   WIRE_SPEED,
   WIRE_TOP_Y,
@@ -31,6 +37,7 @@ interface Bubble {
   x: number
   y: number
   size: number
+  vx: number
   vy: number
 }
 
@@ -42,7 +49,14 @@ function GameScreen({ onExit }: GameScreenProps) {
   const [playerX, setPlayerX] = useState(PLAYER_START_X)
   const [wires, setWires] = useState<Wire[]>([])
   const [bubbles, setBubbles] = useState<Bubble[]>([
-    { id: 0, x: BUBBLE_START_X, y: BUBBLE_START_Y, size: BIG_BUBBLE_SIZE, vy: 0 },
+    {
+      id: 0,
+      x: BUBBLE_START_X,
+      y: BUBBLE_START_Y,
+      size: BIG_BUBBLE_SIZE,
+      vx: BUBBLE_VX,
+      vy: 0,
+    },
   ])
   const heldKeys = useRef(new Set<string>())
   const playerXRef = useRef(playerX)
@@ -102,8 +116,29 @@ function GameScreen({ onExit }: GameScreenProps) {
 
       setBubbles((prev) =>
         prev.map((bubble) => {
-          const vy = bubble.vy + GRAVITY * deltaSeconds
-          return { ...bubble, vy, y: bubble.y + vy * deltaSeconds }
+          let vx = bubble.vx
+          let vy = bubble.vy + GRAVITY * deltaSeconds
+          let x = bubble.x + vx * deltaSeconds
+          let y = bubble.y + vy * deltaSeconds
+          const maxX = STAGE_WIDTH - WALL_THICKNESS - bubble.size
+
+          if (x < BUBBLE_MIN_X) {
+            x = BUBBLE_MIN_X
+            vx = -vx
+          } else if (x > maxX) {
+            x = maxX
+            vx = -vx
+          }
+
+          if (y < CEILING_Y) {
+            y = CEILING_Y
+            vy = -vy
+          } else if (y + bubble.size > FLOOR_TOP_Y) {
+            y = FLOOR_TOP_Y - bubble.size
+            vy = BUBBLE_BOUNCE_VY
+          }
+
+          return { ...bubble, x, y, vx, vy }
         }),
       )
 
