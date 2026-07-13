@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import {
-  BIG_BUBBLE_SIZE,
   BUBBLE_BOUNCE_VY,
   BUBBLE_MIN_X,
+  BUBBLE_SIZES,
+  BUBBLE_SPLIT_VY,
   BUBBLE_START_X,
   BUBBLE_START_Y,
   BUBBLE_VX,
@@ -37,8 +38,22 @@ interface Bubble {
   x: number
   y: number
   size: number
+  tier: number
   vx: number
   vy: number
+}
+
+function rectsOverlap(
+  ax: number,
+  ay: number,
+  aw: number,
+  ah: number,
+  bx: number,
+  by: number,
+  bw: number,
+  bh: number,
+) {
+  return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by
 }
 
 interface GameScreenProps {
@@ -53,18 +68,30 @@ function GameScreen({ onExit }: GameScreenProps) {
       id: 0,
       x: BUBBLE_START_X,
       y: BUBBLE_START_Y,
-      size: BIG_BUBBLE_SIZE,
+      size: BUBBLE_SIZES[0],
+      tier: 0,
       vx: BUBBLE_VX,
       vy: 0,
     },
   ])
   const heldKeys = useRef(new Set<string>())
   const playerXRef = useRef(playerX)
+  const wiresRef = useRef(wires)
+  const bubblesRef = useRef(bubbles)
   const nextWireId = useRef(0)
+  const nextBubbleId = useRef(1)
 
   useEffect(() => {
     playerXRef.current = playerX
   }, [playerX])
+
+  useEffect(() => {
+    wiresRef.current = wires
+  }, [wires])
+
+  useEffect(() => {
+    bubblesRef.current = bubbles
+  }, [bubbles])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -108,39 +135,95 @@ function GameScreen({ onExit }: GameScreenProps) {
         })
       }
 
-      setWires((prev) =>
-        prev
-          .map((wire) => ({ ...wire, y: wire.y - WIRE_SPEED * deltaSeconds }))
-          .filter((wire) => wire.y + WIRE_HEIGHT > WIRE_TOP_Y),
-      )
+      const movedWires = wiresRef.current
+        .map((wire) => ({ ...wire, y: wire.y - WIRE_SPEED * deltaSeconds }))
+        .filter((wire) => wire.y + WIRE_HEIGHT > WIRE_TOP_Y)
 
-      setBubbles((prev) =>
-        prev.map((bubble) => {
-          let vx = bubble.vx
-          let vy = bubble.vy + GRAVITY * deltaSeconds
-          let x = bubble.x + vx * deltaSeconds
-          let y = bubble.y + vy * deltaSeconds
-          const maxX = STAGE_WIDTH - WALL_THICKNESS - bubble.size
+      const movedBubbles = bubblesRef.current.map((bubble) => {
+        let vx = bubble.vx
+        let vy = bubble.vy + GRAVITY * deltaSeconds
+        let x = bubble.x + vx * deltaSeconds
+        let y = bubble.y + vy * deltaSeconds
+        const maxX = STAGE_WIDTH - WALL_THICKNESS - bubble.size
 
-          if (x < BUBBLE_MIN_X) {
-            x = BUBBLE_MIN_X
-            vx = -vx
-          } else if (x > maxX) {
-            x = maxX
-            vx = -vx
-          }
+        if (x < BUBBLE_MIN_X) {
+          x = BUBBLE_MIN_X
+          vx = -vx
+        } else if (x > maxX) {
+          x = maxX
+          vx = -vx
+        }
 
-          if (y < CEILING_Y) {
-            y = CEILING_Y
-            vy = -vy
-          } else if (y + bubble.size > FLOOR_TOP_Y) {
-            y = FLOOR_TOP_Y - bubble.size
-            vy = BUBBLE_BOUNCE_VY
-          }
+        if (y < CEILING_Y) {
+          y = CEILING_Y
+          vy = -vy
+        } else if (y + bubble.size > FLOOR_TOP_Y) {
+          y = FLOOR_TOP_Y - bubble.size
+          vy = BUBBLE_BOUNCE_VY
+        }
 
-          return { ...bubble, x, y, vx, vy }
-        }),
-      )
+        return { ...bubble, x, y, vx, vy }
+      })
+
+      const hitWireIds = new Set<number>()
+      const nextBubbles: Bubble[] = []
+
+      for (const bubble of movedBubbles) {
+        const hitWire = movedWires.find(
+          (wire) =>
+            !hitWireIds.has(wire.id) &&
+            rectsOverlap(
+              wire.x,
+              wire.y,
+              WIRE_WIDTH,
+              WIRE_HEIGHT,
+              bubble.x,
+              bubble.y,
+              bubble.size,
+              bubble.size,
+            ),
+        )
+
+        if (!hitWire) {
+          nextBubbles.push(bubble)
+          continue
+        }
+
+        hitWireIds.add(hitWire.id)
+
+        const nextTier = bubble.tier + 1
+        if (nextTier < BUBBLE_SIZES.length) {
+          const nextSize = BUBBLE_SIZES[nextTier]
+          const centerX = bubble.x + bubble.size / 2
+          const centerY = bubble.y + bubble.size / 2
+          nextBubbles.push(
+            {
+              id: nextBubbleId.current++,
+              x: centerX - nextSize / 2,
+              y: centerY - nextSize / 2,
+              size: nextSize,
+              tier: nextTier,
+              vx: -Math.abs(BUBBLE_VX),
+              vy: BUBBLE_SPLIT_VY,
+            },
+            {
+              id: nextBubbleId.current++,
+              x: centerX - nextSize / 2,
+              y: centerY - nextSize / 2,
+              size: nextSize,
+              tier: nextTier,
+              vx: Math.abs(BUBBLE_VX),
+              vy: BUBBLE_SPLIT_VY,
+            },
+          )
+        } else {
+          // 가장 작은 Bubble의 소멸 처리는 다음 Phase에서 추가한다.
+          nextBubbles.push(bubble)
+        }
+      }
+
+      setWires(movedWires.filter((wire) => !hitWireIds.has(wire.id)))
+      setBubbles(nextBubbles)
 
       frameId = requestAnimationFrame(tick)
     }
