@@ -58,6 +58,8 @@ function rectsOverlap(
   return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by
 }
 
+type GameStatus = 'playing' | 'lost'
+
 interface GameScreenProps {
   onExit: () => void
 }
@@ -65,6 +67,7 @@ interface GameScreenProps {
 function GameScreen({ onExit }: GameScreenProps) {
   const [playerX, setPlayerX] = useState(PLAYER_START_X)
   const [lives, setLives] = useState(PLAYER_START_LIVES)
+  const [status, setStatus] = useState<GameStatus>('playing')
   const [wires, setWires] = useState<Wire[]>([])
   const [bubbles, setBubbles] = useState<Bubble[]>([
     {
@@ -84,10 +87,20 @@ function GameScreen({ onExit }: GameScreenProps) {
   const nextWireId = useRef(0)
   const nextBubbleId = useRef(1)
   const invulnerableSecondsLeft = useRef(0)
+  const livesRef = useRef(lives)
+  const statusRef = useRef(status)
 
   useEffect(() => {
     playerXRef.current = playerX
   }, [playerX])
+
+  useEffect(() => {
+    livesRef.current = lives
+  }, [lives])
+
+  useEffect(() => {
+    statusRef.current = status
+  }, [status])
 
   useEffect(() => {
     wiresRef.current = wires
@@ -104,7 +117,7 @@ function GameScreen({ onExit }: GameScreenProps) {
       if (event.key === ' ') {
         event.preventDefault()
 
-        if (!event.repeat) {
+        if (!event.repeat && statusRef.current === 'playing') {
           setWires((prev) => {
             if (prev.length > 0) return prev
             const wireX =
@@ -127,6 +140,10 @@ function GameScreen({ onExit }: GameScreenProps) {
     const tick = (time: number) => {
       const deltaSeconds = (time - lastTime) / 1000
       lastTime = time
+
+      if (statusRef.current !== 'playing') {
+        return
+      }
 
       let direction = 0
       if (heldKeys.current.has('ArrowLeft')) direction -= 1
@@ -253,7 +270,12 @@ function GameScreen({ onExit }: GameScreenProps) {
 
         if (hitPlayer) {
           invulnerableSecondsLeft.current = PLAYER_INVULNERABLE_SECONDS
-          setLives((prev) => Math.max(0, prev - 1))
+          const newLives = Math.max(0, livesRef.current - 1)
+          setLives(newLives)
+          if (newLives === 0) {
+            statusRef.current = 'lost'
+            setStatus('lost')
+          }
         }
       }
 
@@ -274,6 +296,7 @@ function GameScreen({ onExit }: GameScreenProps) {
         나가기
       </button>
       <div className="lives-display">목숨: {lives}</div>
+      {status === 'lost' && <div className="status-banner">실패</div>}
       <div
         className="game-stage"
         style={{ width: STAGE_WIDTH, height: STAGE_HEIGHT }}
