@@ -1,0 +1,4 @@
+.game-screen {
+  flex: 1;
+  min-height: 100svh;
+}

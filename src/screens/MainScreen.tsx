@@ -8,7 +8,11 @@ interface GameOption {
 
 const GAME_OPTIONS: GameOption[] = [{ id: 'mission1', name: '미션 1' }]
 
-function MainScreen() {
+interface MainScreenProps {
+  onStart: (gameId: string) => void
+}
+
+function MainScreen({ onStart }: MainScreenProps) {
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null)
 
   return (
@@ -31,6 +35,14 @@ function MainScreen() {
           </li>
         ))}
       </ul>
+      <button
+        type="button"
+        className="start-button"
+        disabled={selectedGameId === null}
+        onClick={() => selectedGameId && onStart(selectedGameId)}
+      >
+        시작
+      </button>
     </div>
   )
 }

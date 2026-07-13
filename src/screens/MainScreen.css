@@ -35,3 +35,19 @@
   border-color: var(--accent);
   background: var(--accent-bg);
 }
+
+.start-button {
+  font: inherit;
+  padding: 8px 32px;
+  border: none;
+  border-radius: 4px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+.start-button:disabled {
+  background: var(--border);
+  color: var(--text);
+  cursor: not-allowed;
+}
