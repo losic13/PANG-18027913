@@ -1,5 +1,7 @@
+import { useEffect, useRef, useState } from 'react'
 import {
   PLAYER_HEIGHT,
+  PLAYER_SPEED,
   PLAYER_START_X,
   PLAYER_WIDTH,
   PLAYER_Y,
@@ -13,6 +15,46 @@ interface GameScreenProps {
 }
 
 function GameScreen({ onExit }: GameScreenProps) {
+  const [playerX, setPlayerX] = useState(PLAYER_START_X)
+  const heldKeys = useRef(new Set<string>())
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      heldKeys.current.add(event.key)
+    }
+    const handleKeyUp = (event: KeyboardEvent) => {
+      heldKeys.current.delete(event.key)
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keyup', handleKeyUp)
+
+    let lastTime = performance.now()
+    let frameId: number
+
+    const tick = (time: number) => {
+      const deltaSeconds = (time - lastTime) / 1000
+      lastTime = time
+
+      let direction = 0
+      if (heldKeys.current.has('ArrowLeft')) direction -= 1
+      if (heldKeys.current.has('ArrowRight')) direction += 1
+
+      if (direction !== 0) {
+        setPlayerX((x) => x + direction * PLAYER_SPEED * deltaSeconds)
+      }
+
+      frameId = requestAnimationFrame(tick)
+    }
+    frameId = requestAnimationFrame(tick)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
+      cancelAnimationFrame(frameId)
+    }
+  }, [])
+
   return (
     <div className="game-screen">
       <button type="button" className="exit-button" onClick={onExit}>
@@ -26,7 +68,7 @@ function GameScreen({ onExit }: GameScreenProps) {
         <div
           className="player"
           style={{
-            left: PLAYER_START_X,
+            left: playerX,
             top: PLAYER_Y,
             width: PLAYER_WIDTH,
             height: PLAYER_HEIGHT,
