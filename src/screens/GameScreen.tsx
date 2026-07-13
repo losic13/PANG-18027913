@@ -205,6 +205,21 @@ function GameScreen({ onExit }: GameScreenProps) {
       const movedWires = wiresRef.current
         .map((wire) => ({ ...wire, y: wire.y - WIRE_SPEED * deltaSeconds }))
         .filter((wire) => wire.y + WIRE_HEIGHT > WIRE_TOP_Y)
+        .filter(
+          (wire) =>
+            !BLOCKS.some((block) =>
+              rectsOverlap(
+                wire.x,
+                wire.y,
+                WIRE_WIDTH,
+                WIRE_HEIGHT,
+                block.x,
+                block.y,
+                block.width,
+                block.height,
+              ),
+            ),
+        )
 
       const movedBubbles = bubblesRef.current.map((bubble) => {
         let vx = bubble.vx
