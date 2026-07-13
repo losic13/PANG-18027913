@@ -61,4 +61,16 @@ export const BLOCKS: BlockLayout[] = [
     width: BLOCK_WIDTH,
     height: BLOCK_HEIGHT,
   },
+  {
+    x: 100,
+    y: 250,
+    width: BLOCK_WIDTH,
+    height: BLOCK_HEIGHT,
+  },
+  {
+    x: STAGE_WIDTH - 100 - BLOCK_WIDTH,
+    y: 460,
+    width: BLOCK_WIDTH,
+    height: BLOCK_HEIGHT,
+  },
 ]
