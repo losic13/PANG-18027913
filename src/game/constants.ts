@@ -35,3 +35,6 @@ export const BUBBLE_SPLIT_VY = -500 // px per second, 분할 직후 위로 튀�
 export const FLOOR_TOP_Y = STAGE_HEIGHT - FLOOR_HEIGHT
 export const BUBBLE_MIN_X = WALL_THICKNESS
 export const CEILING_Y = WALL_THICKNESS
+
+export const PLAYER_START_LIVES = 3
+export const PLAYER_INVULNERABLE_SECONDS = 1

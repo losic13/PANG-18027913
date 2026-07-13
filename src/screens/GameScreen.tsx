@@ -11,9 +11,11 @@ import {
   FLOOR_TOP_Y,
   GRAVITY,
   PLAYER_HEIGHT,
+  PLAYER_INVULNERABLE_SECONDS,
   PLAYER_MAX_X,
   PLAYER_MIN_X,
   PLAYER_SPEED,
+  PLAYER_START_LIVES,
   PLAYER_START_X,
   PLAYER_WIDTH,
   PLAYER_Y,
@@ -62,6 +64,7 @@ interface GameScreenProps {
 
 function GameScreen({ onExit }: GameScreenProps) {
   const [playerX, setPlayerX] = useState(PLAYER_START_X)
+  const [lives, setLives] = useState(PLAYER_START_LIVES)
   const [wires, setWires] = useState<Wire[]>([])
   const [bubbles, setBubbles] = useState<Bubble[]>([
     {
@@ -80,6 +83,7 @@ function GameScreen({ onExit }: GameScreenProps) {
   const bubblesRef = useRef(bubbles)
   const nextWireId = useRef(0)
   const nextBubbleId = useRef(1)
+  const invulnerableSecondsLeft = useRef(0)
 
   useEffect(() => {
     playerXRef.current = playerX
@@ -128,11 +132,16 @@ function GameScreen({ onExit }: GameScreenProps) {
       if (heldKeys.current.has('ArrowLeft')) direction -= 1
       if (heldKeys.current.has('ArrowRight')) direction += 1
 
+      let nextPlayerX = playerXRef.current
       if (direction !== 0) {
-        setPlayerX((x) => {
-          const next = x + direction * PLAYER_SPEED * deltaSeconds
-          return Math.min(PLAYER_MAX_X, Math.max(PLAYER_MIN_X, next))
-        })
+        nextPlayerX = Math.min(
+          PLAYER_MAX_X,
+          Math.max(
+            PLAYER_MIN_X,
+            playerXRef.current + direction * PLAYER_SPEED * deltaSeconds,
+          ),
+        )
+        setPlayerX(nextPlayerX)
       }
 
       const movedWires = wiresRef.current
@@ -223,6 +232,31 @@ function GameScreen({ onExit }: GameScreenProps) {
       setWires(movedWires.filter((wire) => !hitWireIds.has(wire.id)))
       setBubbles(nextBubbles)
 
+      if (invulnerableSecondsLeft.current > 0) {
+        invulnerableSecondsLeft.current = Math.max(
+          0,
+          invulnerableSecondsLeft.current - deltaSeconds,
+        )
+      } else {
+        const hitPlayer = nextBubbles.some((bubble) =>
+          rectsOverlap(
+            nextPlayerX,
+            PLAYER_Y,
+            PLAYER_WIDTH,
+            PLAYER_HEIGHT,
+            bubble.x,
+            bubble.y,
+            bubble.size,
+            bubble.size,
+          ),
+        )
+
+        if (hitPlayer) {
+          invulnerableSecondsLeft.current = PLAYER_INVULNERABLE_SECONDS
+          setLives((prev) => Math.max(0, prev - 1))
+        }
+      }
+
       frameId = requestAnimationFrame(tick)
     }
     frameId = requestAnimationFrame(tick)
@@ -239,6 +273,7 @@ function GameScreen({ onExit }: GameScreenProps) {
       <button type="button" className="exit-button" onClick={onExit}>
         나가기
       </button>
+      <div className="lives-display">목숨: {lives}</div>
       <div
         className="game-stage"
         style={{ width: STAGE_WIDTH, height: STAGE_HEIGHT }}

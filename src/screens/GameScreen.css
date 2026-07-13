@@ -41,6 +41,14 @@
   background: radial-gradient(circle at 35% 30%, #7dd3fc, #0284c7);
 }
 
+.lives-display {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
 .exit-button {
   position: absolute;
   top: 16px;
