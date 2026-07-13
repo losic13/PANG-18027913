@@ -8,6 +8,8 @@ import {
   BUBBLE_START_Y,
   BUBBLE_VX,
   CEILING_Y,
+  FIXED_DELTA_SECONDS,
+  FIXED_FPS,
   FLOOR_TOP_Y,
   GRAVITY,
   PLAYER_HEIGHT,
@@ -168,15 +170,10 @@ function GameScreen({ onExit }: GameScreenProps) {
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('keyup', handleKeyUp)
 
-    let lastTime = performance.now()
-    let frameId: number
-
-    const tick = (time: number) => {
-      const deltaSeconds = (time - lastTime) / 1000
-      lastTime = time
+    const tick = () => {
+      const deltaSeconds = FIXED_DELTA_SECONDS
 
       if (statusRef.current !== 'playing') {
-        frameId = requestAnimationFrame(tick)
         return
       }
 
@@ -328,15 +325,13 @@ function GameScreen({ onExit }: GameScreenProps) {
           }
         }
       }
-
-      frameId = requestAnimationFrame(tick)
     }
-    frameId = requestAnimationFrame(tick)
+    const intervalId = setInterval(tick, 1000 / FIXED_FPS)
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
-      cancelAnimationFrame(frameId)
+      clearInterval(intervalId)
     }
   }, [])
 

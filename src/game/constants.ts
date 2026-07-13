@@ -40,3 +40,6 @@ export const PLAYER_START_LIVES = 3
 export const PLAYER_INVULNERABLE_SECONDS = 1
 
 export const TIME_LIMIT_SECONDS = 99
+
+export const FIXED_FPS = 30
+export const FIXED_DELTA_SECONDS = 1 / FIXED_FPS
