@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import {
   PLAYER_HEIGHT,
+  PLAYER_MAX_X,
+  PLAYER_MIN_X,
   PLAYER_SPEED,
   PLAYER_START_X,
   PLAYER_WIDTH,
@@ -41,7 +43,10 @@ function GameScreen({ onExit }: GameScreenProps) {
       if (heldKeys.current.has('ArrowRight')) direction += 1
 
       if (direction !== 0) {
-        setPlayerX((x) => x + direction * PLAYER_SPEED * deltaSeconds)
+        setPlayerX((x) => {
+          const next = x + direction * PLAYER_SPEED * deltaSeconds
+          return Math.min(PLAYER_MAX_X, Math.max(PLAYER_MIN_X, next))
+        })
       }
 
       frameId = requestAnimationFrame(tick)
