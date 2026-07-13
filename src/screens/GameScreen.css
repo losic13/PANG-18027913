@@ -1,4 +1,18 @@
 .game-screen {
+  position: relative;
   flex: 1;
   min-height: 100svh;
+}
+
+.exit-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font: inherit;
+  padding: 4px 16px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-h);
+  cursor: pointer;
 }
