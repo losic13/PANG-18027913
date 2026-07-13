@@ -58,7 +58,7 @@ function rectsOverlap(
   return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by
 }
 
-type GameStatus = 'playing' | 'lost'
+type GameStatus = 'playing' | 'lost' | 'won'
 
 interface GameScreenProps {
   onExit: () => void
@@ -249,6 +249,11 @@ function GameScreen({ onExit }: GameScreenProps) {
       setWires(movedWires.filter((wire) => !hitWireIds.has(wire.id)))
       setBubbles(nextBubbles)
 
+      if (nextBubbles.length === 0) {
+        statusRef.current = 'won'
+        setStatus('won')
+      }
+
       if (invulnerableSecondsLeft.current > 0) {
         invulnerableSecondsLeft.current = Math.max(
           0,
@@ -297,6 +302,7 @@ function GameScreen({ onExit }: GameScreenProps) {
       </button>
       <div className="lives-display">목숨: {lives}</div>
       {status === 'lost' && <div className="status-banner">실패</div>}
+      {status === 'won' && <div className="status-banner">성공</div>}
       <div
         className="game-stage"
         style={{ width: STAGE_WIDTH, height: STAGE_HEIGHT }}
