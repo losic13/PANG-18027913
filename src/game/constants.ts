@@ -13,3 +13,8 @@ export const PLAYER_MAX_X = STAGE_WIDTH - WALL_THICKNESS - PLAYER_WIDTH
 export const PLAYER_START_X = (STAGE_WIDTH - PLAYER_WIDTH) / 2
 
 export const PLAYER_SPEED = 300 // px per second
+
+export const WIRE_WIDTH = 4
+export const WIRE_HEIGHT = 16
+export const WIRE_SPEED = 500 // px per second
+export const WIRE_TOP_Y = WALL_THICKNESS

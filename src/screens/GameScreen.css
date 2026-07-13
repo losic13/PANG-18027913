@@ -30,6 +30,11 @@
   border-radius: 4px;
 }
 
+.wire {
+  position: absolute;
+  background: var(--text-h);
+}
+
 .exit-button {
   position: absolute;
   top: 16px;

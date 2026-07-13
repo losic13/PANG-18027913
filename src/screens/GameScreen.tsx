@@ -9,8 +9,18 @@ import {
   PLAYER_Y,
   STAGE_HEIGHT,
   STAGE_WIDTH,
+  WIRE_HEIGHT,
+  WIRE_SPEED,
+  WIRE_TOP_Y,
+  WIRE_WIDTH,
 } from '../game/constants'
 import './GameScreen.css'
+
+interface Wire {
+  id: number
+  x: number
+  y: number
+}
 
 interface GameScreenProps {
   onExit: () => void
@@ -18,11 +28,30 @@ interface GameScreenProps {
 
 function GameScreen({ onExit }: GameScreenProps) {
   const [playerX, setPlayerX] = useState(PLAYER_START_X)
+  const [wires, setWires] = useState<Wire[]>([])
   const heldKeys = useRef(new Set<string>())
+  const playerXRef = useRef(playerX)
+  const nextWireId = useRef(0)
+
+  useEffect(() => {
+    playerXRef.current = playerX
+  }, [playerX])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       heldKeys.current.add(event.key)
+
+      if (event.key === ' ') {
+        event.preventDefault()
+
+        if (!event.repeat) {
+          const wireX = playerXRef.current + PLAYER_WIDTH / 2 - WIRE_WIDTH / 2
+          setWires((prev) => [
+            ...prev,
+            { id: nextWireId.current++, x: wireX, y: PLAYER_Y },
+          ])
+        }
+      }
     }
     const handleKeyUp = (event: KeyboardEvent) => {
       heldKeys.current.delete(event.key)
@@ -48,6 +77,12 @@ function GameScreen({ onExit }: GameScreenProps) {
           return Math.min(PLAYER_MAX_X, Math.max(PLAYER_MIN_X, next))
         })
       }
+
+      setWires((prev) =>
+        prev
+          .map((wire) => ({ ...wire, y: wire.y - WIRE_SPEED * deltaSeconds }))
+          .filter((wire) => wire.y + WIRE_HEIGHT > WIRE_TOP_Y),
+      )
 
       frameId = requestAnimationFrame(tick)
     }
@@ -79,6 +114,18 @@ function GameScreen({ onExit }: GameScreenProps) {
             height: PLAYER_HEIGHT,
           }}
         />
+        {wires.map((wire) => (
+          <div
+            key={wire.id}
+            className="wire"
+            style={{
+              left: wire.x,
+              top: wire.y,
+              width: WIRE_WIDTH,
+              height: WIRE_HEIGHT,
+            }}
+          />
+        ))}
       </div>
     </div>
   )
