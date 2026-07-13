@@ -45,11 +45,12 @@ function GameScreen({ onExit }: GameScreenProps) {
         event.preventDefault()
 
         if (!event.repeat) {
-          const wireX = playerXRef.current + PLAYER_WIDTH / 2 - WIRE_WIDTH / 2
-          setWires((prev) => [
-            ...prev,
-            { id: nextWireId.current++, x: wireX, y: PLAYER_Y },
-          ])
+          setWires((prev) => {
+            if (prev.length > 0) return prev
+            const wireX =
+              playerXRef.current + PLAYER_WIDTH / 2 - WIRE_WIDTH / 2
+            return [...prev, { id: nextWireId.current++, x: wireX, y: PLAYER_Y }]
+          })
         }
       }
     }
