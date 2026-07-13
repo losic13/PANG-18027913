@@ -216,10 +216,8 @@ function GameScreen({ onExit }: GameScreenProps) {
               vy: BUBBLE_SPLIT_VY,
             },
           )
-        } else {
-          // 가장 작은 Bubble의 소멸 처리는 다음 Phase에서 추가한다.
-          nextBubbles.push(bubble)
         }
+        // 가장 작은 Bubble(다음 tier 없음)은 분할하지 않고 그대로 소멸(nextBubbles에 포함하지 않음)
       }
 
       setWires(movedWires.filter((wire) => !hitWireIds.has(wire.id)))
