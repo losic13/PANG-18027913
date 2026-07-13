@@ -18,3 +18,9 @@ export const WIRE_WIDTH = 4
 export const WIRE_HEIGHT = 16
 export const WIRE_SPEED = 500 // px per second
 export const WIRE_TOP_Y = WALL_THICKNESS
+
+export const GRAVITY = 800 // px per second^2
+
+export const BIG_BUBBLE_SIZE = 80
+export const BUBBLE_START_X = STAGE_WIDTH / 2 - BIG_BUBBLE_SIZE / 2
+export const BUBBLE_START_Y = 80

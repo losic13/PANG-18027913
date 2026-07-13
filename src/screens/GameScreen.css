@@ -35,6 +35,12 @@
   background: var(--text-h);
 }
 
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #7dd3fc, #0284c7);
+}
+
 .exit-button {
   position: absolute;
   top: 16px;

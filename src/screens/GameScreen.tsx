@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import {
+  BIG_BUBBLE_SIZE,
+  BUBBLE_START_X,
+  BUBBLE_START_Y,
+  GRAVITY,
   PLAYER_HEIGHT,
   PLAYER_MAX_X,
   PLAYER_MIN_X,
@@ -22,6 +26,14 @@ interface Wire {
   y: number
 }
 
+interface Bubble {
+  id: number
+  x: number
+  y: number
+  size: number
+  vy: number
+}
+
 interface GameScreenProps {
   onExit: () => void
 }
@@ -29,6 +41,9 @@ interface GameScreenProps {
 function GameScreen({ onExit }: GameScreenProps) {
   const [playerX, setPlayerX] = useState(PLAYER_START_X)
   const [wires, setWires] = useState<Wire[]>([])
+  const [bubbles, setBubbles] = useState<Bubble[]>([
+    { id: 0, x: BUBBLE_START_X, y: BUBBLE_START_Y, size: BIG_BUBBLE_SIZE, vy: 0 },
+  ])
   const heldKeys = useRef(new Set<string>())
   const playerXRef = useRef(playerX)
   const nextWireId = useRef(0)
@@ -85,6 +100,13 @@ function GameScreen({ onExit }: GameScreenProps) {
           .filter((wire) => wire.y + WIRE_HEIGHT > WIRE_TOP_Y),
       )
 
+      setBubbles((prev) =>
+        prev.map((bubble) => {
+          const vy = bubble.vy + GRAVITY * deltaSeconds
+          return { ...bubble, vy, y: bubble.y + vy * deltaSeconds }
+        }),
+      )
+
       frameId = requestAnimationFrame(tick)
     }
     frameId = requestAnimationFrame(tick)
@@ -124,6 +146,18 @@ function GameScreen({ onExit }: GameScreenProps) {
               top: wire.y,
               width: WIRE_WIDTH,
               height: WIRE_HEIGHT,
+            }}
+          />
+        ))}
+        {bubbles.map((bubble) => (
+          <div
+            key={bubble.id}
+            className="bubble"
+            style={{
+              left: bubble.x,
+              top: bubble.y,
+              width: bubble.size,
+              height: bubble.size,
             }}
           />
         ))}
