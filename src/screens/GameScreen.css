@@ -55,13 +55,36 @@
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1;
-  font-size: 40px;
-  font-weight: 700;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
   color: var(--text-h);
   background: var(--bg);
   border: 2px solid var(--border);
   border-radius: 8px;
-  padding: 16px 40px;
+  padding: 24px 40px;
+}
+
+.status-banner-text {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 700;
+}
+
+.status-banner-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.status-banner-actions button {
+  font: inherit;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
 }
 
 .timer-display {

@@ -114,6 +114,35 @@ function GameScreen({ onExit }: GameScreenProps) {
   }, [bubbles])
 
   useEffect(() => {
+    timeLeftRef.current = timeLeft
+  }, [timeLeft])
+
+  const restartGame = () => {
+    invulnerableSecondsLeft.current = 0
+    playerXRef.current = PLAYER_START_X
+    livesRef.current = PLAYER_START_LIVES
+    statusRef.current = 'playing'
+    timeLeftRef.current = TIME_LIMIT_SECONDS
+
+    setPlayerX(PLAYER_START_X)
+    setLives(PLAYER_START_LIVES)
+    setStatus('playing')
+    setTimeLeft(TIME_LIMIT_SECONDS)
+    setWires([])
+    setBubbles([
+      {
+        id: 0,
+        x: BUBBLE_START_X,
+        y: BUBBLE_START_Y,
+        size: BUBBLE_SIZES[0],
+        tier: 0,
+        vx: BUBBLE_VX,
+        vy: 0,
+      },
+    ])
+  }
+
+  useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       heldKeys.current.add(event.key)
 
@@ -145,6 +174,7 @@ function GameScreen({ onExit }: GameScreenProps) {
       lastTime = time
 
       if (statusRef.current !== 'playing') {
+        frameId = requestAnimationFrame(tick)
         return
       }
 
@@ -313,8 +343,21 @@ function GameScreen({ onExit }: GameScreenProps) {
       </button>
       <div className="lives-display">목숨: {lives}</div>
       <div className="timer-display">{Math.ceil(timeLeft)}초</div>
-      {status === 'lost' && <div className="status-banner">실패</div>}
-      {status === 'won' && <div className="status-banner">성공</div>}
+      {status !== 'playing' && (
+        <div className="status-banner">
+          <p className="status-banner-text">
+            {status === 'won' ? '성공' : '실패'}
+          </p>
+          <div className="status-banner-actions">
+            <button type="button" onClick={restartGame}>
+              다시 시작
+            </button>
+            <button type="button" onClick={onExit}>
+              메인으로
+            </button>
+          </div>
+        </div>
+      )}
       <div
         className="game-stage"
         style={{ width: STAGE_WIDTH, height: STAGE_HEIGHT }}
