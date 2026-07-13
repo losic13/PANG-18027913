@@ -43,3 +43,22 @@ export const TIME_LIMIT_SECONDS = 99
 
 export const FIXED_FPS = 30
 export const FIXED_DELTA_SECONDS = 1 / FIXED_FPS
+
+export const BLOCK_WIDTH = 120
+export const BLOCK_HEIGHT = 20
+
+export interface BlockLayout {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+export const BLOCKS: BlockLayout[] = [
+  {
+    x: (STAGE_WIDTH - BLOCK_WIDTH) / 2,
+    y: 380,
+    width: BLOCK_WIDTH,
+    height: BLOCK_HEIGHT,
+  },
+]

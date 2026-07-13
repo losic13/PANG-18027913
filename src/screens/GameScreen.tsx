@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import {
+  BLOCKS,
   BUBBLE_BOUNCE_VY,
   BUBBLE_MIN_X,
   BUBBLE_SIZES,
@@ -365,6 +366,18 @@ function GameScreen({ onExit }: GameScreenProps) {
         style={{ width: STAGE_WIDTH, height: STAGE_HEIGHT }}
       >
         <div className="floor" />
+        {BLOCKS.map((block, index) => (
+          <div
+            key={index}
+            className="block"
+            style={{
+              left: block.x,
+              top: block.y,
+              width: block.width,
+              height: block.height,
+            }}
+          />
+        ))}
         <div
           className={hitFlash ? 'player hit' : 'player'}
           style={{
