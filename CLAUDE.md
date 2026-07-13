@@ -34,8 +34,10 @@ npm run lint      # Oxlint 실행
 - [docs/FEATURES/main.md](docs/FEATURES/main.md) — 메인 화면 구성
 - [docs/FEATURES/game_rule.md](docs/FEATURES/game_rule.md) — PLAYER/BUBBLE/WIRE/BLOCK 게임 룰 상세
 - [docs/FEATURES/mission1.md](docs/FEATURES/mission1.md) — 미션 1 난이도 및 규칙
-- [PLAN.md](PLAN.md) — Phase별 개발 계획(각 Phase는 직접 실행/테스트 가능한 단위)
+- [PLAN.md](PLAN.md) — 미션 1 Phase별 개발 계획(각 Phase는 직접 실행/테스트 가능한 단위)
 - [docs/design/phase1.md](docs/design/phase1.md) — Phase 1(메인 화면 노출) 상세 설계. 이후 Phase 설계 문서도 `docs/design/phaseN.md` 형식으로 추가한다.
+- [MISSION_ROADMAP.md](MISSION_ROADMAP.md) — 미션 1 이후 추가 미션(BLOCK, 다중 Bubble, 파워업, 다중 스테이지 등) 로드맵
+- [PLAN_MISSION2.md](PLAN_MISSION2.md) / [PLAN_MISSION3.md](PLAN_MISSION3.md) / [PLAN_MISSION4.md](PLAN_MISSION4.md) / [PLAN_MISSION5.md](PLAN_MISSION5.md) — 미션 2~5 Phase별 개발 계획
 
 새 기능을 구현하기 전 해당 Phase의 설계 문서가 있는지 `docs/design/`에서 먼저 확인할 것.
 
