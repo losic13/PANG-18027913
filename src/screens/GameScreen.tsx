@@ -340,11 +340,14 @@ function GameScreen({ onExit }: GameScreenProps) {
       <button type="button" className="exit-button" onClick={onExit}>
         나가기
       </button>
-      <div className="lives-display">목숨: {lives}</div>
+      <div className="lives-display" aria-label={`목숨 ${lives}개 남음`}>
+        {'❤'.repeat(lives)}
+        <span className="lives-empty">{'❤'.repeat(PLAYER_START_LIVES - lives)}</span>
+      </div>
       <div className="timer-display">{Math.ceil(timeLeft)}초</div>
       {status !== 'playing' && (
         <div className="status-banner">
-          <p className="status-banner-text">
+          <p className={`status-banner-text ${status}`}>
             {status === 'won' ? '성공' : '실패'}
           </p>
           <div className="status-banner-actions">
