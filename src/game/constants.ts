@@ -38,3 +38,5 @@ export const CEILING_Y = WALL_THICKNESS
 
 export const PLAYER_START_LIVES = 3
 export const PLAYER_INVULNERABLE_SECONDS = 1
+
+export const TIME_LIMIT_SECONDS = 99

@@ -64,6 +64,15 @@
   padding: 16px 40px;
 }
 
+.timer-display {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: 600;
+  color: var(--text-h);
+}
+
 .exit-button {
   position: absolute;
   top: 16px;

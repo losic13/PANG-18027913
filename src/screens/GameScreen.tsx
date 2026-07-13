@@ -21,6 +21,7 @@ import {
   PLAYER_Y,
   STAGE_HEIGHT,
   STAGE_WIDTH,
+  TIME_LIMIT_SECONDS,
   WALL_THICKNESS,
   WIRE_HEIGHT,
   WIRE_SPEED,
@@ -68,6 +69,7 @@ function GameScreen({ onExit }: GameScreenProps) {
   const [playerX, setPlayerX] = useState(PLAYER_START_X)
   const [lives, setLives] = useState(PLAYER_START_LIVES)
   const [status, setStatus] = useState<GameStatus>('playing')
+  const [timeLeft, setTimeLeft] = useState(TIME_LIMIT_SECONDS)
   const [wires, setWires] = useState<Wire[]>([])
   const [bubbles, setBubbles] = useState<Bubble[]>([
     {
@@ -89,6 +91,7 @@ function GameScreen({ onExit }: GameScreenProps) {
   const invulnerableSecondsLeft = useRef(0)
   const livesRef = useRef(lives)
   const statusRef = useRef(status)
+  const timeLeftRef = useRef(timeLeft)
 
   useEffect(() => {
     playerXRef.current = playerX
@@ -143,6 +146,14 @@ function GameScreen({ onExit }: GameScreenProps) {
 
       if (statusRef.current !== 'playing') {
         return
+      }
+
+      const newTimeLeft = Math.max(0, timeLeftRef.current - deltaSeconds)
+      timeLeftRef.current = newTimeLeft
+      setTimeLeft(newTimeLeft)
+      if (newTimeLeft === 0) {
+        statusRef.current = 'lost'
+        setStatus('lost')
       }
 
       let direction = 0
@@ -249,7 +260,7 @@ function GameScreen({ onExit }: GameScreenProps) {
       setWires(movedWires.filter((wire) => !hitWireIds.has(wire.id)))
       setBubbles(nextBubbles)
 
-      if (nextBubbles.length === 0) {
+      if (nextBubbles.length === 0 && statusRef.current === 'playing') {
         statusRef.current = 'won'
         setStatus('won')
       }
@@ -301,6 +312,7 @@ function GameScreen({ onExit }: GameScreenProps) {
         나가기
       </button>
       <div className="lives-display">목숨: {lives}</div>
+      <div className="timer-display">{Math.ceil(timeLeft)}초</div>
       {status === 'lost' && <div className="status-banner">실패</div>}
       {status === 'won' && <div className="status-banner">성공</div>}
       <div
