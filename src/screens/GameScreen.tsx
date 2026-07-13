@@ -242,6 +242,17 @@ function GameScreen({ onExit }: GameScreenProps) {
         } else if (y + bubble.size > FLOOR_TOP_Y) {
           y = FLOOR_TOP_Y - bubble.size
           vy = BUBBLE_BOUNCE_VY
+        } else if (vy > 0) {
+          for (const block of BLOCKS) {
+            const overlapsX = x + bubble.size > block.x && x < block.x + block.width
+            const wasAboveBlock = bubble.y + bubble.size <= block.y
+            const landedOnBlock = y + bubble.size > block.y
+            if (overlapsX && wasAboveBlock && landedOnBlock) {
+              y = block.y - bubble.size
+              vy = BUBBLE_BOUNCE_VY
+              break
+            }
+          }
         }
 
         return { ...bubble, x, y, vx, vy }
