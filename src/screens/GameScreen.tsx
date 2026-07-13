@@ -68,6 +68,7 @@ interface GameScreenProps {
 function GameScreen({ onExit }: GameScreenProps) {
   const [playerX, setPlayerX] = useState(PLAYER_START_X)
   const [lives, setLives] = useState(PLAYER_START_LIVES)
+  const [hitFlash, setHitFlash] = useState(false)
   const [status, setStatus] = useState<GameStatus>('playing')
   const [timeLeft, setTimeLeft] = useState(TIME_LIMIT_SECONDS)
   const [wires, setWires] = useState<Wire[]>([])
@@ -126,6 +127,7 @@ function GameScreen({ onExit }: GameScreenProps) {
 
     setPlayerX(PLAYER_START_X)
     setLives(PLAYER_START_LIVES)
+    setHitFlash(false)
     setStatus('playing')
     setTimeLeft(TIME_LIMIT_SECONDS)
     setWires([])
@@ -318,6 +320,8 @@ function GameScreen({ onExit }: GameScreenProps) {
           invulnerableSecondsLeft.current = PLAYER_INVULNERABLE_SECONDS
           const newLives = Math.max(0, livesRef.current - 1)
           setLives(newLives)
+          setHitFlash(true)
+          setTimeout(() => setHitFlash(false), 300)
           if (newLives === 0) {
             statusRef.current = 'lost'
             setStatus('lost')
@@ -364,7 +368,7 @@ function GameScreen({ onExit }: GameScreenProps) {
       >
         <div className="floor" />
         <div
-          className="player"
+          className={hitFlash ? 'player hit' : 'player'}
           style={{
             left: playerX,
             top: PLAYER_Y,

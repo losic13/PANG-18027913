@@ -1,3 +1,31 @@
+@keyframes screen-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bubble-spawn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes player-hit-flash {
+  0%,
+  100% {
+    filter: none;
+  }
+  50% {
+    filter: brightness(2) saturate(0);
+  }
+}
+
 .game-screen {
   position: relative;
   flex: 1;
@@ -5,6 +33,7 @@
   align-items: center;
   justify-content: center;
   min-height: 100svh;
+  animation: screen-fade-in 0.3s ease-out;
 }
 
 .game-stage {
@@ -30,6 +59,10 @@
   border-radius: 4px;
 }
 
+.player.hit {
+  animation: player-hit-flash 0.3s ease-in-out;
+}
+
 .wire {
   position: absolute;
   background: var(--text-h);
@@ -39,6 +72,7 @@
   position: absolute;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, #7dd3fc, #0284c7);
+  animation: bubble-spawn 0.2s ease-out;
 }
 
 .lives-display {
@@ -85,6 +119,16 @@
   background: var(--accent);
   color: #fff;
   cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.status-banner-actions button:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.status-banner-actions button:active {
+  transform: translateY(0);
 }
 
 .timer-display {
@@ -107,4 +151,9 @@
   background: transparent;
   color: var(--text-h);
   cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.exit-button:hover {
+  border-color: var(--accent);
 }

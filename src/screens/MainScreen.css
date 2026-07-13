@@ -1,3 +1,12 @@
+@keyframes screen-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .main-screen {
   flex: 1;
   display: flex;
@@ -6,6 +15,7 @@
   justify-content: center;
   gap: 24px;
   min-height: 100svh;
+  animation: screen-fade-in 0.3s ease-out;
 }
 
 .main-screen-title {
@@ -29,6 +39,16 @@
   background: transparent;
   color: var(--text-h);
   cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.game-select-item:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.game-select-item:active {
+  transform: translateY(0);
 }
 
 .game-select-item.selected {
@@ -44,6 +64,16 @@
   background: var(--accent);
   color: #fff;
   cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.start-button:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.start-button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .start-button:disabled {
