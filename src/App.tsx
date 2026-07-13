@@ -1,9 +1,7 @@
+import MainScreen from './screens/MainScreen'
+
 function App() {
-  return (
-    <div>
-      <h1>Hello World</h1>
-    </div>
-  )
+  return <MainScreen />
 }
 
 export default App
